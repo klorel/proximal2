@@ -8,8 +8,8 @@ param nVariables := 10;
 param nCassures := 60;
 
 
-param xMin{1..nVariables} := -100;
-param xMax{1..nVariables} := +100;
+param xMin{i in 1..nVariables} := -10*i;
+param xMax{i in 1..nVariables} := +10*i;
 
 
 var x{i in 1..nVariables} >= xMin[i], <= xMax[i];
