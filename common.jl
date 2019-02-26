@@ -1,4 +1,4 @@
-using JuMP, Clp, Cbc, CPLEX
+using JuMP, CPLEX
 
 srand(1234)
 
