@@ -3,11 +3,11 @@ function build_master_cutting_plane(X, model, xMin, xMax)
     nVariables, nCassures = size(X)
     x_ = @variable(model, xMin[i] <= x_[i in 1:nVariables] <= xMax[i]);
     α_ = @variable(model, α_>=-1e10)
-    @objective(model, :Min, α_)
+    @objective(model, Min, α_)
     return x_, α_
 end
 function launch_cutting_plane(X, xMin, xMax)
-    master = Model(solver=CplexSolver(CPX_PARAM_THREADS=1, CPX_PARAM_LPMETHOD=2, CPXPARAM_ScreenOutput=0));
+    master = Model(()->Xpress.Optimizer(OUTPUTLOG=0));
     # master = Model(solver=ClpSolver(LogLevel=0));
     x, α = build_master_cutting_plane(X, master, xMin, xMax)
     stop = false
@@ -19,8 +19,8 @@ function launch_cutting_plane(X, xMin, xMax)
 
     while ! stop
         n_ite+=1
-        solve(master)
-        lb = getvalue(α)
+        optimize!(master)
+        lb = value(α)
         x_value, rhs, sub_gradient = build_cut(X, x)
         ub = rhs
         best_ub = min(ub, best_ub)
@@ -41,7 +41,7 @@ function build_cut(X_, x_)
     nVariables, nCassures = size(X_)
     sub_gradient_ = Base.zeros( nVariables);
     rhs_ = 0
-    x_tmp = getvalue(x_)
+    x_tmp = value.(x_)
 
     for i in 1:nVariables
         rhs_ += x_tmp[i]/nVariables

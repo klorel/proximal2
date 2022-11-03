@@ -1,6 +1,7 @@
-using JuMP, CPLEX
-
-srand(1234)
+using JuMP, Xpress
+using  Random
+using Printf
+Random.seed!(1234)
 
 # common part of the TP, define the criterion
 
