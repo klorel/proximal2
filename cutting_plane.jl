@@ -7,8 +7,7 @@ function build_master_cutting_plane(X, model, xMin, xMax)
     return x_, α_
 end
 function launch_cutting_plane(X, xMin, xMax)
-    master = Model(()->Xpress.Optimizer(OUTPUTLOG=0));
-    # master = Model(solver=ClpSolver(LogLevel=0));
+    master = get_my_model();
     x, α = build_master_cutting_plane(X, master, xMin, xMax)
     stop = false
     lb = -1e20

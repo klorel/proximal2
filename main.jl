@@ -1,7 +1,7 @@
 include("common.jl")
 include("cutting_plane.jl")
 include("lp.jl")
-include("proximal.jl")
+include("proximal_done.jl")
 
 ###
 # general setup

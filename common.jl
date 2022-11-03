@@ -15,3 +15,8 @@ function build_bounds(nVariables)
     return [-10*i for i in 1:nVariables],  [+10*i for i in 1:nVariables];
 end
 # let{i in 1..nVariables, j in 1..nCassures} X[i,j] := xMin[i]+Uniform01()*(xMax[i]-xMin[i]);
+
+
+function get_my_model()
+    return Model(()->Xpress.Optimizer(OUTPUTLOG=0));
+end

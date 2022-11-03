@@ -4,7 +4,7 @@ function update_center(ctr_proximal, nVariables, center)
     end
 end
 function launch_proximal(X, xMin, xMax)
-    master = Model(()->Xpress.Optimizer(OUTPUTLOG=0));
+    master = get_my_model();
     nVariables, nCassures = size(X)
     x, α = build_master_cutting_plane(X, master, xMin, xMax)
     var_proximal = @variable(master, var_proximal[1:nVariables])

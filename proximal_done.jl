@@ -1,10 +1,10 @@
 function update_center(ctr_proximal, nVariables, center)
     for i in 1:nVariables
-        JuMP.setRHS(ctr_proximal[i], center[i])
+        JuMP.set_normalized_rhs(ctr_proximal[i], center[i])
     end
 end
 function launch_proximal(X, xMin, xMax)
-    master = Model(solver=CplexSolver(CPX_PARAM_THREADS=1, CPX_PARAM_QPMETHOD=2, CPXPARAM_ScreenOutput=0));
+    master = get_my_model();
     nVariables, nCassures = size(X)
     x, α = build_master_cutting_plane(X, master, xMin, xMax)
     var_proximal = @variable(master, var_proximal[1:nVariables])
@@ -24,14 +24,14 @@ function launch_proximal(X, xMin, xMax)
     step="NONE"
     weight=1e-0
     tol=1e-1
-    @objective(master, :Min, α +sum(weight*var_proximal[i]^2 for i in 1:nVariables))
+    @objective(master, Min, α +sum(weight*var_proximal[i]^2 for i in 1:nVariables))
 
     center=Base.zeros(nVariables)
     update_center(ctr_proximal, nVariables, center)
     while ! stop
         n_ite+=1
-        solve(master)
-        lb = getvalue(α)
+        optimize!(master)
+        lb = value(α)
 
         x_value, rhs, sub_gradient = build_cut(X, x)
         ub = rhs
@@ -53,12 +53,12 @@ function launch_proximal(X, xMin, xMax)
         if nb_ss>nb_update
             weight*=0.5
             nb_ss=0
-            @objective(master, :Min, α +sum(weight*var_proximal[i]^2 for i in 1:nVariables))
+            @objective(master, Min, α +sum(weight*var_proximal[i]^2 for i in 1:nVariables))
         end
         if nb_ns>nb_update
             weight*=2
             nb_ns=0
-            @objective(master, :Min, α +sum(weight*var_proximal[i]^2 for i in 1:nVariables))
+            @objective(master, Min, α +sum(weight*var_proximal[i]^2 for i in 1:nVariables))
         end
 
         if n_ite>1 && -prediction<=1e-6
